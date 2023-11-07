@@ -26,4 +26,8 @@ public class Worlds {
         return Bukkit.getWorlds().stream().filter(w -> !w.getName().equals(WORLD_OVERWORLD)).findAny().orElse(null);
     }
 
+    public static @Nullable World getOtherWorld(@NotNull World current) {
+        return Bukkit.getWorlds().stream().filter(w -> !w.equals(current)).findAny().orElse(null);
+    }
+
 }

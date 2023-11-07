@@ -216,4 +216,9 @@ public class NMSServerPlayerImpl implements NMSServerPlayer {
         handle.updateOptions(option);
     }
 
+    @Override
+    public void bewatch(@NotNull Player player) {
+
+    }
+
 }

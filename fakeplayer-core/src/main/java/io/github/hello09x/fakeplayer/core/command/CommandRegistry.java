@@ -312,6 +312,11 @@ public class CommandRegistry {
                                 .withOptionalArguments(fakeplayer("name"))
                                 .executes(SleepCommand.instance::wakeup),
 
+                        command("posses")
+                                .withPermission(Permission.action)
+                                .withOptionalArguments(fakeplayer("name"))
+                                .executesPlayer(PossesCommand.instance::posses),
+
                         command("cmd")
                                 .withRequirement(sender -> sender.hasPermission(Permission.cmd) || !FakeplayerConfig.instance.getAllowCommands().isEmpty())
                                 .withArguments(

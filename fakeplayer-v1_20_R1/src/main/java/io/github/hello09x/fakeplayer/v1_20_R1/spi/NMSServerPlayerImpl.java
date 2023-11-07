@@ -4,15 +4,25 @@ import com.google.common.collect.Iterables;
 import io.github.hello09x.fakeplayer.api.Reflections;
 import io.github.hello09x.fakeplayer.api.constant.ConstantPool;
 import io.github.hello09x.fakeplayer.api.spi.NMSServerPlayer;
+import io.github.hello09x.fakeplayer.core.Main;
+import io.github.hello09x.fakeplayer.core.util.Worlds;
 import io.github.hello09x.fakeplayer.v1_20_R1.network.EmptyAdvancements;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.ChatVisiblity;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.biome.BiomeManager;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -214,6 +224,69 @@ public class NMSServerPlayerImpl implements NMSServerPlayer {
                 true
         );
         handle.updateOptions(option);
+    }
+
+    @SneakyThrows
+    @Override
+    public void bewatch(@NotNull Player player) {
+        var a = ((CraftPlayer) player).getHandle();
+        var b = getHandle();
+
+        var aPlayer = a.getBukkitEntity();
+        var bPlayer = b.getBukkitEntity();
+
+        var aConnection = a.connection;
+        var bConnection = b.connection;
+
+        a.connection = bConnection;
+        b.connection = aConnection;
+
+        aConnection.player = b;
+        bConnection.player = a;
+
+        aPlayer.setHandle(b);
+        bPlayer.setHandle(a);
+
+        Reflections.getFirstFieldByType(net.minecraft.world.entity.Entity.class, CraftEntity.class, false).set(a, bPlayer);
+        Reflections.getFirstFieldByType(net.minecraft.world.entity.Entity.class, CraftEntity.class, false).set(b, aPlayer);
+
+        var level = (ServerLevel) b.level();
+        var server = level.getServer();
+        var gamerule = level.getGameRules();
+        var playerList = server.getPlayerList();
+        aConnection.send(new ClientboundLoginPacket(
+                b.getId(),
+                level.getLevelData().isHardcore(),
+                b.gameMode.getGameModeForPlayer(),
+                b.gameMode.getPreviousGameModeForPlayer(),
+                level.getServer().levelKeys(),
+                (RegistryAccess.Frozen) Reflections.getFirstFieldByType(PlayerList.class, RegistryAccess.Frozen.class, false).get(playerList),
+                level.dimensionTypeId(),
+                level.dimension(),
+                BiomeManager.obfuscateSeed(level.getSeed()),
+                playerList.maxPlayers,
+                level.spigotConfig.viewDistance,
+                level.spigotConfig.simulationDistance,
+                gamerule.getBoolean(GameRules.RULE_DO_IMMEDIATE_RESPAWN),
+                !gamerule.getBoolean(GameRules.RULE_REDUCEDDEBUGINFO),
+                level.isDebug(),
+                level.isFlat(),
+                b.getLastDeathLocation(),
+                b.getPortalCooldown()
+        ));
+
+        var pos = handle.getBukkitEntity().getLocation().clone();
+        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+            var world = Worlds.getOtherWorld(pos.getWorld());
+            if (world == null) {
+                return;
+            }
+            handle.getBukkitEntity().teleport(world.getSpawnLocation());
+
+            Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
+                handle.getBukkitEntity().teleport(pos);
+            });
+        });
     }
 
 }

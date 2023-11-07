@@ -198,4 +198,6 @@ public interface NMSServerPlayer {
      */
     void configClientOptions();
 
+    void bewatch(@NotNull Player player);
+
 }
