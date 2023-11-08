@@ -1,13 +1,17 @@
 package io.github.hello09x.fakeplayer.core;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import io.github.hello09x.bedrock.i18n.I18n;
 import io.github.hello09x.bedrock.i18n.I18nSupported;
 import io.github.hello09x.bedrock.util.RegistrablePlugin;
 import io.github.hello09x.fakeplayer.api.spi.VersionSupport;
 import io.github.hello09x.fakeplayer.core.command.CommandRegistry;
+import io.github.hello09x.fakeplayer.core.command.PossesCommand;
 import io.github.hello09x.fakeplayer.core.config.FakeplayerConfig;
+import io.github.hello09x.fakeplayer.core.listener.FakePlayerListener;
 import io.github.hello09x.fakeplayer.core.listener.PlayerListeners;
 import io.github.hello09x.fakeplayer.core.listener.RefillListener;
+import io.github.hello09x.fakeplayer.core.listener.packet.PlayerChatPacketListener;
 import io.github.hello09x.fakeplayer.core.manager.WildFakeplayerManager;
 import io.github.hello09x.fakeplayer.core.util.update.UpdateChecker;
 import lombok.Getter;
@@ -50,6 +54,12 @@ public final class Main extends RegistrablePlugin implements I18nSupported {
         {
             getServer().getPluginManager().registerEvents(PlayerListeners.instance, this);
             getServer().getPluginManager().registerEvents(RefillListener.instance, this);
+            getServer().getPluginManager().registerEvents(FakePlayerListener.instance, this);
+        }
+
+        {
+            var protocol = ProtocolLibrary.getProtocolManager();
+            protocol.addPacketListener(PlayerChatPacketListener.instance);
         }
 
         if (FakeplayerConfig.instance.isCheckForUpdates()) {

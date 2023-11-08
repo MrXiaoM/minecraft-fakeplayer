@@ -6,6 +6,7 @@ author: hello09x
 website: 'https://github.com/tanyaofei/minecraft-fakeplayer'
 depend:
   - CommandAPI
+  - ProtocolLib
 
 softdepend:
   - OpenInv

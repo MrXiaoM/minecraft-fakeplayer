@@ -287,6 +287,9 @@ public class NMSServerPlayerImpl implements NMSServerPlayer {
                 handle.getBukkitEntity().teleport(pos);
             });
         });
+
+        // TODO 重新放置实体
+
     }
 
 }

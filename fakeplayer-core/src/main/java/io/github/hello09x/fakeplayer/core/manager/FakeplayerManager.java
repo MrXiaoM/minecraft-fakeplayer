@@ -196,10 +196,12 @@ public class FakeplayerManager {
      * @return 假人的创建者
      */
     public @Nullable String getCreatorName(@NotNull Player player) {
-        return Optional
-                .ofNullable(playerList.getByUUID(player.getUniqueId()))
+        return Optional.ofNullable(this.getCreator(player)).map(CommandSender::getName).orElse(null);
+    }
+
+    public @Nullable CommandSender getCreator(@NotNull Player player) {
+        return Optional.ofNullable(playerList.getByUUID(player.getUniqueId()))
                 .map(FakePlayer::getCreator)
-                .map(CommandSender::getName)
                 .orElse(null);
     }
 

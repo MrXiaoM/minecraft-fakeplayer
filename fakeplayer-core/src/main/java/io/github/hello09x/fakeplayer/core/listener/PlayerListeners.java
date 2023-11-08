@@ -2,15 +2,21 @@ package io.github.hello09x.fakeplayer.core.listener;
 
 import com.google.common.base.Throwables;
 import io.github.hello09x.bedrock.i18n.I18n;
+import io.github.hello09x.bedrock.util.Components;
 import io.github.hello09x.fakeplayer.core.Main;
 import io.github.hello09x.fakeplayer.core.config.FakeplayerConfig;
 import io.github.hello09x.fakeplayer.core.manager.FakeplayerManager;
 import io.github.hello09x.fakeplayer.core.repository.UsedIdRepository;
 import io.github.hello09x.fakeplayer.core.util.InternalAddressGenerator;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -18,6 +24,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static net.kyori.adventure.text.Component.*;
@@ -71,24 +78,24 @@ public class PlayerListeners implements Listener {
         }
     }
 
-//    /**
-//     * 死亡退出游戏
-//     */
-//    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-//    public void onDead(@NotNull PlayerDeathEvent event) {
-//        var player = event.getPlayer();
-//        if (!manager.isFake(player)) {
-//            return;
-//        }
-//
-//        // 有一些跨服同步插件会退出时同步生命值, 假人重新生成的时候同步为 0
-//        // 因此在死亡时将生命值设置恢复满血先
-//        Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH))
-//                .map(AttributeInstance::getValue)
-//                .ifPresent(player::setHealth);
-//        event.setCancelled(true);
-//        manager.remove(event.getPlayer().getName(), event.deathMessage());
-//    }
+    /**
+     * 死亡退出游戏
+     */
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onDead(@NotNull PlayerDeathEvent event) {
+        var player = event.getPlayer();
+        if (!manager.isFake(player)) {
+            return;
+        }
+
+        // 有一些跨服同步插件会退出时同步生命值, 假人重新生成的时候同步为 0
+        // 因此在死亡时将生命值设置恢复满血先
+        Optional.ofNullable(player.getAttribute(Attribute.GENERIC_MAX_HEALTH))
+                .map(AttributeInstance::getValue)
+                .ifPresent(player::setHealth);
+        event.setCancelled(true);
+        manager.remove(event.getPlayer().getName(), event.deathMessage());
+    }
 
     /**
      * 退出游戏掉落背包
