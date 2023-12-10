@@ -10,6 +10,17 @@
 
 现在，你只需要运行 `./gradlew build` 即可一键编译，编译产物在 `build/libs/` 文件夹内。
 
+## 如何添加支持版本
+
+开发者快速引导。假设你需要添加 `v1_00_R0` (NMS版本号) 的 Minecraft 版本支持，按照以下步骤操作：
+
+- 新建子模块 `fakeplayer-v1_00_R0`，可从原有子模块创建副本，并修改其依赖的 Minecraft 版本。
+- 在 `settings.gradle` 添加包含该子模块
+- 在 `build.gradle` 的 `dependencies` 添加依赖 `project(':fakeplayer-v1_00_R0')`
+- 添加 SPI 到 `src/main/resources/META-INF/services/io.github.hello09x.fakeplayer.api.spi.NMSBridge`
+- 重新加载 Gradle 项目，并执行 build 任务进行构建
+- 修复代码中的错误，使其适合当前 Minecraft 版本，返回上一步，直到构建成功为止
+
 ### 支持版本
 
 仅支持 `Paper` 及其下游 `Purpur` 核心
