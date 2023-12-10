@@ -1,4 +1,4 @@
-rootProject.name = 'minecraft-fakeplayer'
+rootProject.name = 'fakeplayer'
 
 include ':fakeplayer-api'
 include ':fakeplayer-core'
