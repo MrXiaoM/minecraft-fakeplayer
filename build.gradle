@@ -1,0 +1,57 @@
+plugins {
+    id "java"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
+}
+allprojects{
+    apply plugin: 'java'
+    group = "top.mrxiaom"
+    version = "0.2.6"
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://maven.fastmirror.net/repositories/minecraft" }
+        maven { url "https://mvn.lumine.io/repository/maven/" }
+        maven { url "https://libraries.minecraft.net/" }
+        maven { url "https://repo.papermc.io/repository/maven-public/" }
+        maven { url "https://repo.codemc.io/repository/maven-public/" }
+        maven {
+            name = "spigotmc-repo"
+            url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        }
+        maven { url = "https://repo.dmulloy2.net/repository/public/" }
+        maven { url = "https://repo.extendedclip.com/content/repositories/placeholderapi/" }
+        maven { url = "https://jitpack.io" }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/groups/public/"
+        }
+    }
+    def targetJavaVersion = 17
+    java {
+
+        def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+        if (JavaVersion.current() < javaVersion) {
+            toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+            options.release.set(targetJavaVersion)
+        }
+    }
+}
+dependencies {
+    implementation project(":fakeplayer-api")
+    implementation project(":fakeplayer-core")
+    implementation project(":fakeplayer-v1_19_R3")
+    implementation project(":fakeplayer-v1_20_R1")
+    implementation project(":fakeplayer-v1_20_R2")
+    implementation fileTree('lib/bedrock.jar')
+}
+shadowJar {
+    classifier("")
+}
+tasks.build.dependsOn(shadowJar)

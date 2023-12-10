@@ -1,0 +1,24 @@
+plugins {
+    id "java"
+}
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT'
+    compileOnly 'commons-io:commons-io:2.15.1'
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    compileOnly fileTree('../lib/bedrock.jar')
+    compileOnly project(':fakeplayer-api')
+    compileOnly 'com.mojang:authlib:4.0.43'
+    compileOnly 'dev.jorel:commandapi-bukkit-core:9.2.0'
+    compileOnly 'com.github.jikoo.OpenInv:openinvapi:4.4.0'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+}
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(sourceSets.main.resources.srcDirs) {
+        expand(
+            "version": version,
+        )
+        include "plugin.yml"
+    }
+}
