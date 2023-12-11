@@ -1,16 +1,13 @@
 plugins {
     id "java"
+    id "io.papermc.paperweight.userdev"
 }
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT'
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.2-R0.1-SNAPSHOT")
     compileOnly 'org.projectlombok:lombok:1.18.28'
     compileOnly project(':fakeplayer-api')
     compileOnly project(':fakeplayer-core')
     compileOnly fileTree('../lib/bedrock.jar')
-    compileOnly 'org.spigotmc:spigot:1.20.2-R0.1-SNAPSHOT:remapped-mojang'
-    compileOnly 'com.mojang:authlib:5.0.47'
-    compileOnly 'com.mojang:datafixerupper:6.0.8'
-    compileOnly 'io.netty:netty-all:4.1.97.Final'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
 }

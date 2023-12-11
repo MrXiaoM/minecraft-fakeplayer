@@ -1,5 +1,6 @@
 plugins {
     id "java"
+    id "io.papermc.paperweight.userdev" version "1.3.9" apply false
     id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 allprojects{
@@ -51,7 +52,13 @@ dependencies {
     implementation project(":fakeplayer-v1_20_R2")
     implementation fileTree('lib/bedrock.jar')
 }
+subprojects.findAll { it.name.contains("v1_") }.forEach { proj ->
+    proj.tasks.jar.doLast {
+        proj.tasks.reobfJar.run()
+        outputs.files.singleFile.delete()
+        proj.tasks.reobfJar.outputs.files.singleFile.renameTo(outputs.files.singleFile)
+    }
+}
 shadowJar {
     classifier("")
 }
-tasks.build.dependsOn(shadowJar)
