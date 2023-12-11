@@ -18,6 +18,7 @@
 - 在 `settings.gradle` 添加包含该子模块
 - 在 `build.gradle` 的 `dependencies` 添加依赖 `project(':fakeplayer-v1_00_R0')`
 - 添加 SPI 到 `src/main/resources/META-INF/services/io.github.hello09x.fakeplayer.api.spi.NMSBridge`
+- 更改 `NMSBridgeImpl` 的 `SUPPORTS` 包含的版本号
 - 重新加载 Gradle 项目，并执行 build 任务进行构建
 - 修复代码中的错误，使其适合当前 Minecraft 版本，返回上一步，直到构建成功为止
 
